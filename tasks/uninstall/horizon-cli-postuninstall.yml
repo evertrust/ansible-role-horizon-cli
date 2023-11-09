@@ -9,3 +9,14 @@
     path: "{{ profile.stat.path }}"
     state: absent
   when: profile.stat.exists
+
+- name: Check if fact file exists
+  ansible.builtin.stat:
+    path: /etc/ansible/facts.d/horizon-cli.fact
+  register: fact
+
+- name: Cleanup fact file
+  ansible.builtin.file:
+    path: "{{ fact.stat.path }}"
+    state: absent
+  when: fact.stat.exists

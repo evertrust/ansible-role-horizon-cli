@@ -7,8 +7,8 @@
 
 - name: Put horizon local fact
   ansible.builtin.template:
-    src: horizon.fact.j2
-    dest: /etc/ansible/facts.d/horizon.fact
+    src: horizon-cli.fact.j2
+    dest: /etc/ansible/facts.d/horizon-cli.fact
     mode: '0644'
 
 - name: Add horizon-cli to path
