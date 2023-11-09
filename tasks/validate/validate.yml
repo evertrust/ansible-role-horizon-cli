@@ -1,0 +1,4 @@
+- name: Check that 'run_option' is an allowed value
+  ansible.builtin.assert:
+    that: run_option in run_option_vars
+    fail_msg: The value you used for 'run_option', {{ run_option }}, is not allowed. The allowed values are [{{ run_option_vars | join(', ') }}].

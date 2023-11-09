@@ -1,0 +1,23 @@
+# To use this task, the horizon-cli package should be made available on the VM
+# by adding the EverTrust repository (or its proxy equivalent) to the VM yum or dnf configuration.
+---
+- name: Install horizon-cli package
+  ansible.builtin.package:
+    name: "{{ horizon_cli_package }}"
+    state: present
+
+- name: Check if config file already exists
+  ansible.builtin.stat:
+    path: "/opt/horizon/etc/horizon-cli.conf"
+  register: config
+
+- name: "Configure horizon-cli"
+  ansible.builtin.shell:
+    cmd: horizon-cli install \
+      --endpoint={{ endpoint }} \ 
+      --proxy={{ proxy | default("") }} \
+      --api-id={{ api_id }} \
+      --api-key={{ api_key }}
+      --timeout={{ http_timeout }} \
+      --root-ca-path={{ root_ca_path | default("") }}
+  when: not config.stat.exists

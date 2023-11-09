@@ -1,0 +1,16 @@
+---
+- name: Uninstall horizon-cli package
+  ansible.builtin.package:
+    name: "{{ horizon_cli_package }}"
+    state: absent
+
+- name: Check if config file exists
+  stat:
+    path: "/opt/horizon/etc/horizon-cli.conf"
+  register: config
+
+- name: Cleanup horizon-cli config file
+  ansible.builtin.file:
+    path: "{{ config.stat.path }}"
+    state: absent
+  when: config.stat.exists

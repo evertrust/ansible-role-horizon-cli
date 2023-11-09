@@ -1,0 +1,19 @@
+---
+- name: Ensure /etc/ansible/facts.d exists
+  ansible.builtin.file:
+    path: /etc/ansible/facts.d
+    state: directory
+    mode: '0750'
+
+- name: Put horizon local fact
+  ansible.builtin.template:
+    src: horizon.fact.j2
+    dest: /etc/ansible/facts.d/horizon.fact
+    mode: '0644'
+
+- name: Add horizon-cli to path
+  ansible.builtin.copy:
+    dest: /etc/profile.d/horizon-cli-path.sh
+    content: 'PATH=$PATH:/opt/horizon/bin/'
+    mode: "0644"
+  when: add_to_path

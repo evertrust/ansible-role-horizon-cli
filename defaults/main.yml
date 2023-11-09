@@ -1,0 +1,38 @@
+---
+# The role run option. Can be "install" or "uninstall".
+# - install: Installs the Horizon CLI.
+# - uninstall: Uninstalls the Horizon CLI.
+run_option: install
+
+# The Horizon CLI version to install.
+version: '1.7.4'
+
+# The package name to install. Can be useful to install a local package that is not fetched from a repository.
+# Eg.: /tmp/horizon-cli-1.7.4-1.el7.x86_64.rpm
+horizon_cli_package: 'horizon-cli-{{ version }}'
+
+# If true, the Horizon CLI will be added to the PATH environment variable.
+# This creates a file in /etc/profile.d/ to add the CLI to the PATH.
+add_to_path: true
+
+# The Horizon instance endpoint. Use the URL without the trailing /api/v1.
+# Eg.: https://horizon.example.com
+endpoint: null
+
+# The Horizon instance API ID.
+# Eg.: horizon-cli
+api_id: null
+
+# The Horizon instance API key.
+# Eg.: password
+api_key: null
+
+# If needed, the proxy to use to reach the Horizon instance.
+proxy: null
+
+# The HTTP timeout in seconds.
+http_timeout: 10
+
+# A path to a root CA certificate to use to verify the certificate exposed by the Horizon instance.
+# Eg.: /etc/pki/ca-trust/source/anchors/horizon-ca.crt
+root_ca_path: null

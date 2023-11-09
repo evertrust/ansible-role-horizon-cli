@@ -1,0 +1,2 @@
+# Set the values allowed for various variables
+run_option_vars: [install, uninstall]

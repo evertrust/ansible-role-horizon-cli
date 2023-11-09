@@ -1,0 +1,11 @@
+---
+- name: Check if profile file exists
+  ansible.builtin.stat:
+    path: /etc/profile.d/horizon-cli-path.sh
+  register: profile
+
+- name: Cleanup profile file
+  ansible.builtin.file:
+    path: "{{ profile.stat.path }}"
+    state: absent
+  when: profile.stat.exists

@@ -1,0 +1,14 @@
+- name: Validate role variables
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate/validate.yml"
+
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/install/horizon-cli-install.yml"
+  when: run_option == 'install'
+
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/install/horizon-cli-postinstall.yml"
+  when: run_option == 'install'
+
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/uninstall/horizon-cli-uninstall.yml"
+  when: run_option == 'uninstall'
+
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/uninstall/horizon-cli-postuninstall.yml"
+  when: run_option == 'uninstall'
