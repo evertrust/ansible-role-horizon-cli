@@ -1,0 +1,28 @@
+- name: Horizon-cli
+  hosts: proxy
+  become: yes  # Élévation de privilèges si nécessaire
+  vars_files:
+    - ./vars/main.yml
+  tasks:
+    - name: Uninstall horizon-cli package
+      ansible.builtin.package:
+        name: "{{ horizon_cli_package | default('horizon-cli') }}"
+        state: absent
+      register: status
+
+    - name: Check if config file exists
+      stat:
+        path: "/opt/horizon/etc/horizon-cli.conf"
+      register: config
+
+    - name: Cleanup horizon-cli config file
+      ansible.builtin.file:
+        path: "{{ config.stat.path }}"
+        state: absent
+      when: config.stat.exists
+
+    - name: Notify Uninstallation success
+      ansible.builtin.debug:
+        msg: "✅ Success ✅: Horizon-cli has been uninstalled successfully."
+      when: status is defined and status.rc == 0
+

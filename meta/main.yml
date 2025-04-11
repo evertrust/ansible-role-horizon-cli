@@ -2,7 +2,7 @@ galaxy_info:
   author: EverTrust
   role_name: horizon_cli
   namespace: evertrust
-  description: Installs and configure horizon-cli
+  description: Installs and configures horizon-cli
   company: EverTrust
 
   license: unlicense
@@ -12,7 +12,6 @@ galaxy_info:
   platforms:
     - name: EL
       versions:
-        - '7'
         - '8'
         - '9'
 

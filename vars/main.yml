@@ -1,2 +1,11 @@
-# Set the values allowed for various variables
-run_option_vars: [install, uninstall]
+endpoint: '<URL>'
+api_id:  '<api_id>'
+api_key: '<api_key>'
+http_timeout: 10
+root_ca_path: '<path/to/rootca>'
+local_campaign: '<localscan_campaign_name>'
+net_campaign: '<networkscan_campaign_name>'
+period: 'monthly' #network scan periodic task
+add_to_path: true #add binary to path
+run_option_vars:
+  - install

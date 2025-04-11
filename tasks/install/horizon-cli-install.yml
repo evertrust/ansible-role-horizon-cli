@@ -1,23 +1,47 @@
 # To use this task, the horizon-cli package should be made available on the VM
 # by adding the EverTrust repository (or its proxy equivalent) to the VM yum or dnf configuration.
----
 - name: Install horizon-cli package
   ansible.builtin.package:
-    name: "{{ horizon_cli_package }}"
+    name: "{{ horizon_cli_package | default('horizon-cli') }}"
     state: present
+
+- name: Install horizon-cli package
+  ansible.builtin.package:
+    name: "{{ horizon_cli_package | default('horizon-cli') }}"
+    state: present
+  register: installation_status
+
+- name: Notify installation success
+  ansible.builtin.debug:
+    msg: "✅ Success ✅: Horizon-cli has been installed successfully."
+  when: installation_status is defined and installation_status.rc == 0
 
 - name: Check if config file already exists
   ansible.builtin.stat:
     path: "/opt/horizon/etc/horizon-cli.conf"
   register: config
 
-- name: "Configure horizon-cli"
+
+      ##########################
+      #for debugging purpses
+#
+#- name: Display variables before registering configuration
+#  debug:
+#    msg:
+#      - "Endpoint: {{ endpoint | default('undefined') }}"
+#      - "API ID: {{ api_id | default('undefined') }}"
+#      - "Timeout: {{ http_timeout | default('undefined') }}"
+#      - "Root CA Path: {{ root_ca_path | default('undefined') }}"
+      ##########################
+
+- name: Configure horizon-cli
   ansible.builtin.shell:
-    cmd: horizon-cli install \
-      --endpoint={{ endpoint }} \ 
-      --proxy={{ proxy | default("") }} \
-      --api-id={{ api_id }} \
-      --api-key={{ api_key }}
-      --timeout={{ http_timeout }} \
-      --root-ca-path={{ root_ca_path | default("") }}
-  when: not config.stat.exists
+    cmd: "/opt/horizon/bin/horizon-cli install --endpoint={{ endpoint | default('') }} --proxy={{ proxy | default('') }} --api-id={{ api_id | default('') }} --api-key={{ api_key | default('') }} --timeout={{ http_timeout | default('') }} --root-ca-path={{ root_ca_path | default('') }}"
+  register: config
+
+
+- name: Notify Configuration success
+  ansible.builtin.debug:
+    msg: "✅ Success ✅: Horizon-cli has been configured successfully."
+  when: config is defined and config.rc == 0
+

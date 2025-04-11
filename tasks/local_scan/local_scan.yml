@@ -1,0 +1,48 @@
+- name: Lunch a local-scan
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Lunch a local-scan (one shot)
+      ansible.builtin.shell:
+        cmd: "/opt/horizon/bin/horizon-cli localscan --campaign={{ campaign }}"
+      become: yes
+      register: scan_result
+
+    - name: Create a periodic task for the local scan (weekly)
+      ansible.builtin.cron:
+        name: "Weekly local scan"
+        minute: "0"
+        hour: "4"
+        weekday: "1"
+        job: "/opt/horizon/bin/horizon-cli localscan --campaign={{ campaign }}"
+        user: "root"
+
+
+    - name: Create a periodic task for the local scan (bi-monthly)
+      ansible.builtin.cron:
+        name: "Bi-monthly local scan"
+        minute: "0"
+        hour: "4"
+        day: "1,15"
+        job: "/opt/horizon/bin/horizon-cli localscan --campaign={{ campaign }}"
+        user: "root"
+
+    - name: Create a periodic task for the local scan (monthly)
+      ansible.builtin.cron:
+        name: "Monthly local scan"
+        minute: "0"
+        hour: "2"
+        day: "1"
+        job: "/opt/horizon/bin/horizon-cli localscan --campaign={{ campaign }}"
+        user: "root"
+
+    - name: Verify scanning status
+      ansible.builtin.fail:
+        msg: "❌ Error ❌ : {{ scan_result.stderr }} while performing local-scan"
+      when: scan_result is defined and scan_result.rc != 0
+
+    - name: Notify success of local scan
+      ansible.builtin.debug:
+        msg: "✅ Success ✅ : Local-scan ended successfully for campaign '{{ campaign }}'."
+      when: scan_result is defined and scan_result.rc == 0
