@@ -1,0 +1,62 @@
+- name: Horizon-cli
+  hosts: proxy
+  become: yes  # Élévation de privilèges si nécessaire
+  vars_files:
+    - ./vars/main.yml
+  tasks:
+
+    - name: Install horizon-cli package
+      ansible.builtin.package:
+        name: "{{ horizon_cli_package | default('horizon-cli') }}"
+        state: present
+      register: installation_status
+
+    - name: Notify installation success
+      ansible.builtin.debug:
+        msg: "✅ Success ✅: Horizon-cli has been installed successfully."
+      when: installation_status is defined and installation_status.rc == 0
+
+    - name: Check if config file already exists
+      ansible.builtin.stat:
+        path: "/opt/horizon/etc/horizon-cli.conf"
+      register: config
+
+
+    - name: Configure horizon-cli
+      ansible.builtin.shell:
+        cmd: "/opt/horizon/bin/horizon-cli install --endpoint={{ endpoint | default('') }} --proxy={{ proxy | default('') }} --api-id={{ api_id | default('') }} --api-key={{ api_key | default('') }} --timeout={{ http_timeout | default('') }} --root-ca-path={{ root_ca_path | default('') }}"
+      register: config
+
+
+    - name: Notify Configuration success
+      ansible.builtin.debug:
+        msg: "✅ Success ✅: Horizon-cli has been configured successfully."
+      when: config is defined and config.rc == 0
+
+    - name: Ensure /etc/ansible/facts.d exists
+      ansible.builtin.file:
+        path: /etc/ansible/facts.d
+        state: directory
+        mode: '0750'
+
+    - name: Lunch a local-scan (one shot)
+      ansible.builtin.shell:
+        cmd: "/opt/horizon/bin/horizon-cli localscan --campaign={{ local_campaign }}"
+      become: yes
+      register: scan_result
+
+    - name: Notify success of local scan
+      ansible.builtin.debug:
+        msg: "✅ Success ✅ : Local-scan ended successfully for campaign '{{ local_campaign }}'."
+      when: scan_result is defined and scan_result.rc == 0
+
+    - name: Lunch a network-scan manually
+      ansible.builtin.shell:
+        cmd: "/opt/horizon/bin/horizon-cli netscan --campaign={{ net_campaign }}"
+      become: yes  # Si nécessaire pour l'élévation des privilèges
+      register: scan_result
+
+    - name: Notify success of local scan
+      ansible.builtin.debug:
+        msg: "✅ Success ✅ : Network-scan ended successfully for campaign '{{ net_campaign }}'."
+      when: scan_result is defined and scan_result.rc == 0

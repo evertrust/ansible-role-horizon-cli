@@ -1,0 +1,21 @@
+- name: Lunch a network-scan manually
+  ansible.builtin.shell:
+    cmd: "/opt/horizon/bin/horizon-cli netscan --campaign={{ campaign }}"
+  become: yes  # Si nécessaire pour l'élévation des privilèges
+  register: scan_result
+
+- name: Lunch a network-scan and create a periodic task
+  ansible.builtin.shell:
+    cmd: "/opt/horizon/bin/horizon-cli netscan --campaign={{ campaign }} --create-periodic-task --period={{ period }}"
+  become: yes  # Si nécessaire pour l'élévation des privilèges
+  register: scan_result
+
+- name: Verify scanning status
+  ansible.builtin.fail:
+    msg: "❌ Error ❌ : {{ scan_result.stderr }} while performing network-scan"
+  when: scan_result is defined and scan_result.rc != 0
+
+- name: Notify success of local scan
+  ansible.builtin.debug:
+    msg: "✅ Success ✅ : Network-scan ended successfully for campaign '{{ campaign }}'."
+  when: scan_result is defined and scan_result.rc == 0

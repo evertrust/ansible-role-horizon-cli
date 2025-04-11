@@ -1,0 +1,27 @@
+---
+- name: Converge
+  hosts: all
+  vars:
+    ansible_user: root
+  gather_facts: false
+  tasks:
+    - name: Include Horizon-cli install
+      include_tasks: ../../../tasks/install/horizon-cli-install.yml
+
+    - name: Include post-install tasks
+      include_tasks: ../../tasks/install/horizon-cli-postinstall.yml
+
+    - name: Include local scan tasks
+      include_tasks: ../../tasks/local_scan/local_scan.yml
+
+    - name: Include network scan tasks
+      include_tasks: ../../tasks/network_scan/network_scan.yml
+
+    - name: Include uninstall tasks
+      include_tasks: ../../tasks/uninstall/horizon-cli-postuninstall.yml
+
+    - name: Include uninstall tasks
+      include_tasks: ../../tasks/uninstall/horizon-cli-uninstall.yml
+
+    - name: Include validation tasks
+      include_tasks: ../../tasks/validate/validate.yml
